@@ -176,7 +176,11 @@ func (s *V4Signer) Sign(req *http.Request) {
 	sts := s.stringToSign(t, creq)                    // Build string to sign
 	signature := s.signature(t, sts)                  // Calculate the AWS Signature Version 4
 	auth := s.authorization(req.Header, t, signature) // Create Authorization header value
-
+	
+	if s.auth.token != "" {
+		req.Header.Set("x-amz-security-token",s.auth.token)
+	}
+	
 	if _, ok := req.Form["X-Amz-Expires"]; ok {
 		req.Form["X-Amz-Signature"] = []string{signature}
 	} else {
